@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Search from './components/Search'
 import MovieCard from './components/MovieCard';
+import { useDebounce } from 'react-use';
 
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
@@ -21,6 +22,12 @@ const [searchTerm, setSearchTerm] = useState('');
 const [errorMessage, setErrorMessage] = useState('');
 const [movieList, setMovieList] = useState([]);
 const [isLoading, setIsLoading] = useState(false);
+const [debounceSearchTerm, setDebounceSearchTerm] = useState('');
+
+
+//Dobounce the search term to prevent making too many requests
+//by waiting for the user to stop for 500ms
+useDebounce(() => setDebounceSearchTerm(searchTerm), 500, [searchTerm]);
 
 
 // fecth the movies api
@@ -54,9 +61,9 @@ const fecthMovies = async (query = '') => {
 }
 
 useEffect(() => {
-  fecthMovies(searchTerm)
+  fecthMovies(debounceSearchTerm)
 
-}, [searchTerm]);
+}, [debounceSearchTerm]);
 
   return (
    <div className='pattern'>
